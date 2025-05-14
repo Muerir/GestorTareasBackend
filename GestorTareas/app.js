@@ -1,7 +1,16 @@
 const express = require('express');
 var path = require('path');
+const cors = require('cors');
 
 const app = express();
+
+// Habilitar CORS solo para el frontend en localhost:3001
+app.use(cors({
+  origin: 'http://localhost:3001',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 
 app.use(express.json());
 
