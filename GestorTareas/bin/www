@@ -24,7 +24,7 @@ var server = http.createServer(app);
 /**
  * Run migrations, then start server
  */
-exec('./node_modules/.bin/sequelize db:migrate', (error, stdout, stderr) => {
+exec('node ./node_modules/sequelize-cli/lib/sequelize db:migrate', (error, stdout, stderr) => {
   if (error) {
     console.error(`❌ Error ejecutando migraciones: ${error.message}`);
     process.exit(1);
