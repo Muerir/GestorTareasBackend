@@ -8,7 +8,6 @@ const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.js')[env];
 const db = {};
-const sequelize = new Sequelize(config.use_env_variable ? process.env[config.use_env_variable] : config);
 
 
 let sequelize;
@@ -32,13 +31,6 @@ fs
     const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
     db[model.name] = model;
   });
-
-sequelize.sync().then(() => {
-  app.listen(process.env.PORT || 5000, () => {
-    console.log('Servidor backend en Render funcionando');
-  });
-});
-
 
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
