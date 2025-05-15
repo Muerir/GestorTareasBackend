@@ -1,5 +1,12 @@
 #!/usr/bin/env node
 
+const db = require('../models');
+
+db.sequelize.sync().then(() => {
+  server.listen(port);
+});
+
+
 /**
  * Module dependencies.
  */
