@@ -24,7 +24,7 @@ var server = http.createServer(app);
 /**
  * Run migrations, then start server
  */
-exec('npx sequelize-cli db:migrate', (error, stdout, stderr) => {
+exec('./node_modules/.bin/sequelize db:migrate', (error, stdout, stderr) => {
   if (error) {
     console.error(`❌ Error ejecutando migraciones: ${error.message}`);
     process.exit(1);
