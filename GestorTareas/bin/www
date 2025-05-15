@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
+const { exec } = require('child_process');
+const db = require('../models');
+
 /**
  * Module dependencies.
  */
 var app = require('../app');
 var debug = require('debug')('gestortareas:server');
 var http = require('http');
-var db = require('../models'); // Importa la base de datos
 
 /**
  * Get port from environment and store in Express.
@@ -20,14 +22,20 @@ app.set('port', port);
 var server = http.createServer(app);
 
 /**
- * Connect to DB and start server
+ * Run migrations, then start server
  */
-db.sequelize.sync().then(() => {
+exec('npx sequelize-cli db:migrate', (error, stdout, stderr) => {
+  if (error) {
+    console.error(`❌ Error ejecutando migraciones: ${error.message}`);
+    process.exit(1);
+  }
+  if (stderr) console.error(`⚠️ STDERR: ${stderr}`);
+  console.log(`✅ Migraciones aplicadas:\n${stdout}`);
+
+  // Solo iniciar el servidor si las migraciones se ejecutaron exitosamente
   server.listen(port);
   server.on('error', onError);
   server.on('listening', onListening);
-}).catch((err) => {
-  console.error('Error al sincronizar con la base de datos:', err);
 });
 
 /**
@@ -35,15 +43,8 @@ db.sequelize.sync().then(() => {
  */
 function normalizePort(val) {
   var port = parseInt(val, 10);
-
-  if (isNaN(port)) {
-    return val; // named pipe
-  }
-
-  if (port >= 0) {
-    return port; // port number
-  }
-
+  if (isNaN(port)) return val;
+  if (port >= 0) return port;
   return false;
 }
 
@@ -51,19 +52,14 @@ function normalizePort(val) {
  * Event listener for HTTP server "error" event.
  */
 function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
-
+  if (error.syscall !== 'listen') throw error;
   var bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
-
-  // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
+      console.error(`${bind} requiere privilegios elevados`);
       process.exit(1);
     case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
+      console.error(`${bind} ya está en uso`);
       process.exit(1);
     default:
       throw error;
@@ -78,4 +74,3 @@ function onListening() {
   var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
-
