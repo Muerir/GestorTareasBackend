@@ -5,8 +5,19 @@ const cors = require('cors');
 const app = express();
 
 // Habilitar CORS solo para el frontend en localhost:3001
+const allowedOrigins = [
+  'http://localhost:3001',
+  'https://gestor-de-tareas-silk.vercel.app'
+];
+
 app.use(cors({
-  origin: 'http://localhost:3001',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
