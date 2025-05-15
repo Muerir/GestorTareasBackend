@@ -33,6 +33,13 @@ fs
     db[model.name] = model;
   });
 
+sequelize.sync().then(() => {
+  app.listen(process.env.PORT || 5000, () => {
+    console.log('Servidor backend en Render funcionando');
+  });
+});
+
+
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
